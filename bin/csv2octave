@@ -1,0 +1,26 @@
+# -*- mode: Shell-script; eval: (auto-fill-mode 1); -*-
+#!/bin/bash
+
+
+# locate a input file - adjust for your needs
+in=$(find ${CACHEDIR}/${simulation}/nmon/rawdata -name \*.csv | grep -v process | grep bgp)
+
+# define a output file - again adjust as needed
+out=${CACHEDIR}/${simulation}/cpu_bgp.csv
+
+cd $HOME/projects/nmonvisualizer_ext
+
+if $(lein test | grep -qx '0 failures, 0 errors.')
+then
+
+    lein run ${in} ${out}
+
+else
+
+    echo "*************************************"
+    echo "*** ERROR: Unit tests are failing ***"
+    echo "*************************************"
+
+    lein test
+
+fi

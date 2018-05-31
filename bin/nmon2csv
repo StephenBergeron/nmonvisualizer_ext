@@ -1,0 +1,11 @@
+# -*- mode: Shell-script; eval: (auto-fill-mode 1); -*-
+#!/bin/bash
+
+cd ${1}/
+
+if ls *.nmon 1> /dev/null 2>&1; then
+    echo ".nmon files do exist - process"
+    nmonvisualizer com.ibm.nmon.ReportGenerator --rawdata *.nmon
+else
+    echo ".nmon files do not exist - do nothing"
+fi

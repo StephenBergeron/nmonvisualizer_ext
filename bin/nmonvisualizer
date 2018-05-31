@@ -1,0 +1,15 @@
+# -*- mode: Shell-script; eval: (auto-fill-mode 1); -*-
+#!/bin/bash
+
+# Wrapper for the nmonvisualizer jar
+# git@github.com:nmonvisualizer/nmonvisualizer.git
+
+# locate the jar
+export NMONVISUALIZER_JAR=$(find ${HOME}/projects/nmonvisualizer/ -name NMONVisualizer\*.jar)
+
+if [ -f  ${NMONVISUALIZER_JAR} ]
+then
+    java -DfontSize=16 -jar ${NMONVISUALIZER_JAR} "$@"
+else
+    echo "***  NMONVisualizer\*.jar - Not Available - git@github.com:nmonvisualizer/nmonvisualizer.git"
+fi
