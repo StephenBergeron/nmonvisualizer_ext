@@ -70,4 +70,4 @@
   (clojure.pprint/pprint args)
   (cond
     (= 2 (count args)) (clojure.pprint/pprint (to-csv (simple-model (first args)) (second args)))
-    :else              (println "please specify input and output ")))
+    :else              (println "please specify input and output files")))
