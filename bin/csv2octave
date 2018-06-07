@@ -1,26 +1,35 @@
-# -*- mode: Shell-script; eval: (auto-fill-mode 1); -*-
-#!/bin/bash
+#!/usr/bin/env ruby
+# -*-Ruby-*-
+
+require 'pry'
+require "awesome_print"
 
 
-# locate a input file - adjust for your needs
-in=$(find ${CACHEDIR}/${simulation}/nmon/rawdata -name \*.csv | grep -v process | grep bgp)
+# where to look for nmon_files
+# by default nmon_visualizer create a <>/nmon/rawdata directory
 
-# define a output file - again adjust as needed
-out=${CACHEDIR}/${simulation}/cpu_bgp.csv
+@simulation=%Q[#{ENV["CACHEDIR"]}/#{ENV["simulation"]}]
+@nmon_dir = %Q[#{@simulation}/nmon/rawdata]
 
-cd $HOME/projects/nmonvisualizer_ext
+Dir.chdir(@nmon_dir)
 
-if $(lein test | grep -qx '0 failures, 0 errors.')
-then
+@files = Dir['*.csv'].select do |file|
+  !(file.include? 'processes')
+end
 
-    lein run ${in} ${out}
+ftokens = @files.map do |file|
+  no_epoch = file.gsub(/-\d{10}/, '-')
+  no_epoch.split(/[\s._-]/)
+end
 
-else
+fterse = ftokens.map do |ftoken|
+  [ftoken[4], ftoken[6]].join("-")
+end
 
-    echo "*************************************"
-    echo "*** ERROR: Unit tests are failing ***"
-    echo "*************************************"
+in_out = @files.zip(fterse).map { |a|
+  cmd = %Q[java -jar /home/stn/projects/nmonvisualizer_ext/target/uberjar/nmonvisualizer_ext-0.1.0-SNAPSHOT-standalone.jar "#{@nmon_dir}/#{a[0]}" "#{@simulation}/cpu_#{a[1]}.csv"]
+  res = %x[#{cmd}]
+  {cmd => res}
+}
 
-    lein test
-
-fi
+pp in_out
