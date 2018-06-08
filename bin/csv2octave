@@ -5,13 +5,12 @@ require 'pry'
 require "awesome_print"
 
 
-# where to look for nmon_files
-# by default nmon_visualizer create a <>/nmon/rawdata directory
+# The script arguments are where to look for nmon_files - otherwise use some default
+@nmon_dir = (ARGV[0].nil? ? %Q[#{ENV["CACHEDIR"]}/#{ENV["nmon_dir"]}/nmon] : ARGV[0])
 
-@simulation=%Q[#{ENV["CACHEDIR"]}/#{ENV["simulation"]}]
-@nmon_dir = %Q[#{@simulation}/nmon/rawdata]
+@rawdata_dir = %Q[#{@nmon_dir}/rawdata]
 
-Dir.chdir(@nmon_dir)
+Dir.chdir(@rawdata_dir)
 
 @files = Dir['*.csv'].select do |file|
   !(file.include? 'processes')
@@ -27,7 +26,7 @@ fterse = ftokens.map do |ftoken|
 end
 
 in_out = @files.zip(fterse).map { |a|
-  cmd = %Q[java -jar /home/stn/projects/nmonvisualizer_ext/target/uberjar/nmonvisualizer_ext-0.1.0-SNAPSHOT-standalone.jar "#{@nmon_dir}/#{a[0]}" "#{@simulation}/cpu_#{a[1]}.csv"]
+  cmd = %Q[java -jar /home/stn/projects/nmonvisualizer_ext/target/uberjar/nmonvisualizer_ext-0.1.0-SNAPSHOT-standalone.jar "#{@rawdata_dir}/#{a[0]}" "#{@nmon_dir}/cpu_#{a[1]}.csv"]
   res = %x[#{cmd}]
   {cmd => res}
 }
